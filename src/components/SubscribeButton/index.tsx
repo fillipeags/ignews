@@ -7,16 +7,16 @@ import styles from './styles.module.scss';
 export function SubscribeButton() {
   const [session] = useSession();
   const router = useRouter()
-  
-  async function handleSubscribe(){
-    if (!session){
+
+  async function handleSubscribe() {
+    if (!session) {
       signIn('github')
       return;
     }
 
     if (session.activeSubscription) {
       router.push('/posts');
-      return;      
+      return;
     }
 
     try {
@@ -26,14 +26,14 @@ export function SubscribeButton() {
 
       const stripe = await getStripeJs()
 
-      await stripe.redirectToCheckout({sessionId})
+      await stripe.redirectToCheckout({ sessionId })
     } catch (err) {
       alert(err.message);
     }
   }
 
   return (
-    <button 
+    <button
       type="button"
       className={styles.subscribeButton}
       onClick={handleSubscribe}
