@@ -16,14 +16,13 @@
     margin-left: 5rem;
     height: 5rem;
 
-    * {
+    a {
       display: inline-block;
       position: relative;
       padding: 0 0.5rem;
       height: 5rem;
       line-height: 5rem;
       color: var(--gray-300);
-
       transition: color 0.2s;
 
       & + a {
@@ -31,7 +30,7 @@
       }
 
       &:hover {
-        color: var(--white);
+        color: var(--white);        
       }
 
       &.active {
@@ -40,12 +39,12 @@
       }
 
       &.active::after {
-        content: "";
+        content: '';
         height: 3px;
         border-radius: 3px 3px 0 0;
         width: 100%;
         position: absolute;
-        bottom: 1%;
+        bottom: 1px;
         left: 0;
         background: var(--yellow-500);
       }

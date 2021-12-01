@@ -1,12 +1,14 @@
-import { create } from 'domain';
-import { query as q } from 'faunadb';
-import { fauna } from "../../../services/fauna";
-import { stripe } from '../../../services/stripe';
+// todos os arquivos que começam com underline (_) 
+// o Next entende que não é uma rota.
 
-export async function saveSubscription(
+import { fauna } from "../../../services/fauna"
+import { query as q } from 'faunadb'
+import { stripe } from "../../../services/stripe"
+
+export async function saveSubscription (
   subscriptionId: string,
   customerId: string,
-  createAction = false,
+  createAction = false
 ) {
   const userRef = await fauna.query(
     q.Select(
@@ -29,11 +31,11 @@ export async function saveSubscription(
     price_id: subscription.items.data[0].price.id,
   }
 
-  if (createAction) {
+  if (createAction) {    
     await fauna.query(
       q.Create(
         q.Collection('subscriptions'),
-        {data : subscriptionData}
+        { data: subscriptionData }
       )
     )
   } else {
@@ -48,9 +50,19 @@ export async function saveSubscription(
             )
           )
         ),
-        { data: subscriptionData}
+        { data: subscriptionData }
       )
     )
   }
-  
 }
+
+// Update: registros individuais
+// Replace: o registro inteiro
+
+// Para funcionar os Webhooks, precisa habilitar o Stripe-CLI.
+// Para isso, abra um terminal cmd e digite o comando:
+// stripe listen --forward-to localhost:3000/api/webhooks
+
+// Para testar, ao informar os dados do cartão, informe:
+// 4242 4242 4242 4242
+// MM/YY = 12/36, CVC = 123

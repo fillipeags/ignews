@@ -1,65 +1,65 @@
-import {render, screen, fireEvent} from '@testing-library/react';
-import { mocked } from 'ts-jest/utils';
-import { signIn, useSession } from 'next-auth/client';
-import { SubscribeButton } from '.';
-import { useRouter } from 'next/router';
+import { render, screen, fireEvent } from '@testing-library/react'
+import { signIn, useSession } from 'next-auth/client'
+import { mocked } from 'ts-jest/utils'
+import { useRouter } from 'next/router'
+import { SubscribeButton } from '.'
 
-jest.mock('next-auth/client');
-jest.mock('next/router');
+jest.mock('next-auth/client')
+jest.mock('next/router')
 
-describe('SubscribeButton component', () => {
-  it('renders correctly', () => {
-    const useSessionMocked = mocked(useSession)
-    useSessionMocked.mockReturnValueOnce([null, false])
+describe('SubscribeButton Component', () => {
 
-    render (<SubscribeButton/>)
+    it('renderizando corretamente', () => {
+        const useSessionMocked = mocked(useSession)
+        
+        useSessionMocked.mockReturnValueOnce([null, false])
+        
+        render(<SubscribeButton />)
 
-    expect(screen.getByText('Subscribe now')).toBeInTheDocument()
-  })
+        // getByText passa o texto que eu espero encontrar
+        const btn = screen.getByText('Assine já 🤓')
 
-  it('redirects user to sign in when not authenticated', () => {
-    const signInMocked = mocked(signIn)
-    const useSessionMocked = mocked(useSession)
+        expect(btn).toBeInTheDocument()
+    })
 
-    useSessionMocked.mockReturnValueOnce([null, false])
+    it('redireciona usuário não autenticado para SignIn', () => {        
+        const signInMocked = mocked(signIn)
+        const useSessionMocked = mocked(useSession)
+        
+        useSessionMocked.mockReturnValueOnce([null, false])        
 
-    render(<SubscribeButton/>)
+        render(<SubscribeButton />)
 
-    const subscribeButton = screen.getByText('Subscribe now');
+        // getByText passa o texto que eu espero encontrar
+        const btn = screen.getByText('Assine já 🤓')
 
-    fireEvent.click(subscribeButton)
+        fireEvent.click(btn)        
 
-    expect(signInMocked).toHaveBeenCalled()
-  })
+        expect(signInMocked).toHaveBeenCalled()
+    })
 
-  it('redirects to posts when user already has a subscription', () => {
-    const useRouterMocked = mocked(useRouter)
-    const useSessionMocked = mocked(useSession)
-    const pushMock = jest.fn()
+    it('redireciona usuário autenticado para Posts', () => {
+        const useRouterMocked = mocked(useRouter)
+        const useSessionMocked = mocked(useSession)
+        const pushMocked = jest.fn()
 
-    useSessionMocked.mockReturnValueOnce([
-      { user: {
-        name: 'John Doe', 
-        email: 'john.doe@example.com'
-      }, 
-        activeSubscription: 'fake-active-subscription',
-        expires: 'fake-expres'
-      }, 
-      false
-    ])
+        useSessionMocked.mockReturnValueOnce([
+            { user: { name: 'John Doe', email: 'john.doe@gmail.com'},
+            activeSubscription: 'fake',
+            expires: 'fake'}, false
+        ])
 
-    useRouterMocked.mockReturnValueOnce({
-      push: pushMock
-    } as any)
+        useRouterMocked.mockReturnValueOnce({
+            push: pushMocked
+        } as any)
 
-    render(<SubscribeButton/>)
+        render(<SubscribeButton />)
 
+        // getByText passa o texto que eu espero encontrar
+        const btn = screen.getByText('Assine já 🤓')
 
-    const subscribeButton = screen.getByText('Subscribe now');
+        fireEvent.click(btn)        
 
-    fireEvent.click(subscribeButton)
-
-    expect(pushMock).toHaveBeenCalledWith('/posts')
-
-  })
+        expect(pushMocked).toHaveBeenCalledWith('/posts')
+    })
 })

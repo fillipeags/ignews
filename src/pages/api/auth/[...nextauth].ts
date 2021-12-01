@@ -1,10 +1,8 @@
-import { query as q } from 'faunadb';
-
 import NextAuth from 'next-auth'
-import { session } from 'next-auth/client';
 import Providers from 'next-auth/providers'
 
-import { fauna } from '../../../services/fauna';
+import { query as q } from 'faunadb'
+import { fauna } from '../../../services/fauna'
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -14,6 +12,7 @@ export default NextAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       scope: 'read:user'
     }),
+    // ...add more providers here
   ],
   callbacks: {
     async session(session) {
@@ -32,7 +31,7 @@ export default NextAuth({
                     )
                   )
                 )
-              ),
+              ),          
               q.Match(
                 q.Index('subscription_by_status'),
                 "active"
@@ -40,6 +39,7 @@ export default NextAuth({
             ])
           )
         )
+
         return {
           ...session,
           activeSubscription: userActiveSubscription
@@ -47,11 +47,10 @@ export default NextAuth({
       } catch {
         return {
           ...session,
-          activeSubscription: null,
+          activeSubscription: null
         }
-      } 
+      }
     },
-
     async signIn(user, account, profile) {
       const { email } = user
 
@@ -67,8 +66,7 @@ export default NextAuth({
               )
             ),
             q.Create(
-              q.Collection('users'),
-              { data : { email }}
+              q.Collection('users'), { data: { email } }
             ),
             q.Get(
               q.Match(
@@ -78,12 +76,16 @@ export default NextAuth({
             )
           )
         )
-
+        
         return true
-      }catch {
+
+      } catch {
         return false
       }
 
-    },
+    }
   }
+
+  // A database is optional, but required to persist accounts in a database
+  //database: process.env.DATABASE_URL,
 })
